@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>계좌번호 공유 (Share Bank Account)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", Dotum, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* Bank Card - Sleek dark design */
+        .card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: transform 0.1s ease;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .bank-title {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+
+        .chip {
+            width: 42px;
+            height: 30px;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            border-radius: 6px;
+        }
+
+        .account-num-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+            color: #f8fafc;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .holder-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .holder-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Toast Feedback Overlay */
+        .toast {
+            background-color: #10b981;
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Korean Bank Grid Styling */
+        .bank-selector-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .bank-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .app-btn {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .app-btn:active {
+            transform: scale(0.97);
+            background-color: #f1f5f9;
+        }
+
+        /* Custom Brand Accent Colors for Borders on Hover/Active */
+        .btn-kb:active { border-color: #ffbc00; }     /* KB Star Yellow */
+        .btn-shinhan:active { border-color: #0046ff; }/* Shinhan Blue */
+        .btn-hana:active { border-color: #008485; }   /* Hana Green */
+        .btn-woori:active { border-color: #007bc3; }  /* Woori Light Blue */
+
+        .app-icon {
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .helper-tip {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 24px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Clipboard Feedback Notification -->
+        <div class="toast" id="statusToast">복사 완료! (Copied!)</div>
+
+        <!-- 1. The Main Clickable Bank Card -->
+        <div class="card" onclick="copyOnly()">
+            <div class="card-header">
+                <span class="bank-title" id="displayBankName">받는 사람 은행 (Your Bank Name)</span>
+                <div class="chip"></div>
+            </div>
+            
+            <!-- User-visible account (can include dashes) -->
+            <div class="account-num-display" id="displayAccount">123-45-67890-123</div>
+            
+            <div class="card-footer">
+                <div>
+                    <div class="holder-label">예금주 (Account Holder)</div>
+                    <div class="holder-name" id="displayHolder">홍길동 (Hong Gil Dong)</div>
+                </div>
+                <span style="font-size: 0.8rem; opacity: 0.6;">클릭 시 복사</span>
+            </div>
+        </div>
+
+        <!-- 2. The Big 4 Korean Bank Redirect Grid -->
+        <div class="bank-selector-title">은행 앱 선택 (Copy & Open App)</div>
+        <div class="bank-grid">
+            
+            <!-- KB Kookmin Bank -->
+            <button class="app-btn btn-kb" onclick="copyAndRedirect('kbbank://', 'KB스타뱅킹')">
+                <span class="app-icon">💛</span>
+                <span>KB국민은행</span>
+            </button>
+
+            <!-- Shinhan Bank -->
+            <button class="app-btn btn-shinhan" onclick="copyAndRedirect('shinhan-sr-sol://', '신한 SOL')">
+                <span class="app-icon">💙</span>
+                <span>신한은행</span>
+            </button>
+
+            <!-- Hana Bank -->
+            <button class="app-btn btn-hana" onclick="copyAndRedirect('hanabank://', '하나원큐')">
+                <span class="app-icon">💚</span>
+                <span>하나은행</span>
+            </button>
+
+            <!-- Woori Bank -->
+            <button class="app-btn btn-woori" onclick="copyAndRedirect('wooribank://', '우리WON')">
+                <span class="app-icon">💎</span>
+                <span>우리은행</span>
+            </button>
+
+        </div>
+
+        <div class="helper-tip">
+            은행 버튼을 누르면 계좌번호가 자동으로 복사된 후 해당 은행 앱으로 이동합니다.<br>
+            (App opens and account copies automatically upon clicking a bank button.)
+        </div>
+    </div>
+
+    <script>
+        // Adjust these variables to match your personal target account details:
+        const RAW_ACCOUNT_NUMBER = "0123456789123"; // Plain digits only for easy pasting
+        const FORMATTED_ACCOUNT = "012-34-56789-123"; // Displayed on card
+        const ACCOUNT_HOLDER = "김태길";
+        const BANK_NAME = "한국은행 (HANKOOK BANK)"; // Your bank name on card
+
+        // Initialize display content
+        document.getElementById('displayBankName').innerText = BANK_NAME;
+        document.getElementById('displayAccount').innerText = FORMATTED_ACCOUNT;
+        document.getElementById('displayHolder').innerText = ACCOUNT_HOLDER;
+
+        // Show a brief toast notification on screen
+        function showToast(message) {
+            const toast = document.getElementById('statusToast');
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Just copy the account number to the clipboard
+        function copyOnly() {
+            navigator.clipboard.writeText(RAW_ACCOUNT_NUMBER).then(() => {
+                showToast("계좌번호가 복사되었습니다!");
+            }).catch(() => {
+                alert("복사에 실패했습니다. 번호를 직접 복사해주세요.");
+            });
+        }
+
+        // Copy process, then deep-link jump
+        function copyAndRedirect(schemeUrl, appName) {
+            navigator.clipboard.writeText(RAW_ACCOUNT_NUMBER).then(() => {
+                showToast(`복사 완료! ${appName} 앱을 여는 중...`);
+                
+                // Slight delay to ensure the clipboard write completes before browser suspension
+                setTimeout(() => {
+                    window.location.href = schemeUrl;
+                }, 600);
+            }).catch(err => {
+                console.error("Copy failed", err);
+            });
+        }
+    </script>
+</body>
+</html>
