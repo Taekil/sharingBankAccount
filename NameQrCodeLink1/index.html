@@ -1,3 +1,4 @@
+/* 강민주 팀장님*/
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -175,34 +176,36 @@
         <!-- 1. The Main Clickable Bank Card -->
         <div class="card" onclick="copyOnly()">
             <div class="card-header">
-                <span class="bank-title" id="displayBankName">받는 사람 은행 (Your Bank Name)</span>
+                <span class="bank-title" id="displayBankName">기업은행</span>
                 <div class="chip"></div>
             </div>
             
             <!-- User-visible account (can include dashes) -->
-            <div class="account-num-display" id="displayAccount">123-45-67890-123</div>
+            <div class="account-num-display" id="displayAccount">931-018999-04-022</div>
             
             <div class="card-footer">
                 <div>
-                    <div class="holder-label">예금주 (Account Holder)</div>
-                    <div class="holder-name" id="displayHolder">홍길동 (Hong Gil Dong)</div>
+                    <div class="holder-label">예금주</div>
+                    <div class="holder-name" id="displayHolder">강민주 팀장</div>
                 </div>
                 <span style="font-size: 0.8rem; opacity: 0.6;">클릭 시 복사</span>
             </div>
         </div>
 
+        /*
         <div class="helper-tip">
             은행 버튼을 누르면 계좌번호가 자동으로 복사된 후 해당 은행 앱으로 이동합니다.<br>
             (App opens and account copies automatically upon clicking a bank button.)
         </div>
+        */
     </div>
 
     <script>
         // Adjust these variables to match your personal target account details:
-        const RAW_ACCOUNT_NUMBER = "1234567890123"; // Plain digits only for easy pasting
-        const FORMATTED_ACCOUNT = "123-45-67890-123"; // Displayed on card
-        const ACCOUNT_HOLDER = "홍길동";
-        const BANK_NAME = "신한은행 (Shinhan Bank)"; // Your bank name on card
+        const RAW_ACCOUNT_NUMBER = "93101899904022"; // Plain digits only for easy pasting
+        const FORMATTED_ACCOUNT = "931-018999-04-022"; // Displayed on card
+        const ACCOUNT_HOLDER = "강민주";
+        const BANK_NAME = "기업은행"; // Your bank name on card
 
         // Initialize display content
         document.getElementById('displayBankName').innerText = BANK_NAME;
